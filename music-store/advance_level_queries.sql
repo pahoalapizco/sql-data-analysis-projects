@@ -158,3 +158,18 @@ SELECT customer_id,
 	ROUND(((COALESCE(total_2024, 0) - COALESCE(total_2023, 0)) / COALESCE(total_2023, 1)) * 100, 2) AS third_year,
 	ROUND(((COALESCE(total_2021, 0) - COALESCE(total_2024, 0)) / COALESCE(total_2021, 1)) * 100, 2) AS overall_growth
 FROM customer_spending_year;
+
+-- 8. Market basket analysis: Tracks which usually sell together (pairwise)
+WITH track_pairs AS (
+	SELECT IL.invoice_id, IL.track_id AS track_id1, IL2.track_id AS  track_id2
+	FROM invoice_line AS IL
+		INNER JOIN invoice_line AS IL2 ON IL2.invoice_id = IL.invoice_id
+			AND IL.track_id < IL2.track_id
+	ORDER BY IL.invoice_id, IL.track_id, IL2.track_id
+)
+
+SELECT track_id1, track_id2, COUNT(invoice_id) AS times_bought_together
+FROM track_pairs
+GROUP BY track_id1, track_id2
+ORDER BY times_bought_together DESC
+LIMIT 10;
