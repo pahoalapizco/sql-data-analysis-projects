@@ -74,11 +74,12 @@ quarters AS (
 		ART.artist_name,
 		EXTRACT (YEAR FROM I.invoice_date) AS invoice_year, 
 		EXTRACT ('quarter' FROM I.invoice_date) AS invoice_quarter,
-		I.total
+		SUM(IL.quantity * IL.unit_price) AS total
 	FROM invoice AS I
 		INNER JOIN invoice_line AS IL ON IL.invoice_id = I.invoice_id
 		INNER JOIN artist_tracks AS ART ON ART.track_id = IL.track_id
 	WHERE I.invoice_date BETWEEN '2023-01-31'::DATE AND '2024-12-31'::DATE
+	GROUP BY ART.artist_name, invoice_year, invoice_quarter
 )
 
 SELECT artist_name,
