@@ -42,9 +42,8 @@ ORDER BY total_track_sales DESC
 
 -- 4. Total income by musical genre:
 WITH revenue_by_genre AS (
-	SELECT T.genre_id, SUM(I.total) AS total_by_genre
-	FROM invoice AS I
-		INNER JOIN invoice_line AS IL ON IL.invoice_id = I.invoice_id
+	SELECT T.genre_id, SUM(IL.quantity * IL.unit_price) AS total_by_genre
+	FROM invoice_line AS IL
 		INNER JOIN track AS T ON T.track_id = IL.track_id
 	GROUP BY T.genre_id
 )
